@@ -14,6 +14,7 @@ func main() {
 
 	app.Post("/todo", controller.CreateTodo)
 	app.Get("/todos", controller.GetTodos)
+	app.Put("/todo/:id", controller.UpdateTodo)
 
 	app.Listen(":8081")
 }

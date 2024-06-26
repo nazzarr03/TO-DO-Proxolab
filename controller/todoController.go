@@ -77,3 +77,38 @@ func GetTodos(c *fiber.Ctx) error {
 		"data": todos,
 	})
 }
+
+func UpdateTodo(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	id := c.Params("id")
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"error": "Invalid ID",
+			"data":  nil,
+		})
+	}
+
+	var todo models.Todo
+	if err := c.BodyParser(&todo); err != nil {
+		return c.Status(http.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+			"data":  nil,
+		})
+	}
+
+	update := primitive.D{{Key: "$set", Value: todo}}
+	err = todoCollection.FindOneAndUpdate(ctx, primitive.M{"_id": objID}, update).Err()
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+			"data":  nil,
+		})
+	}
+
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"message": "Todo updated successfully",
+	})
+}
