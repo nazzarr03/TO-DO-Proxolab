@@ -13,6 +13,7 @@ func main() {
 	})
 
 	app.Post("/todo", controller.CreateTodo)
+	app.Get("/todos", controller.GetTodos)
 
 	app.Listen(":8081")
 }

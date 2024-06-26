@@ -51,3 +51,29 @@ func CreateTodo(c *fiber.Ctx) error {
 		"data":    todo,
 	})
 }
+
+func GetTodos(c *fiber.Ctx) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	cursor, err := todoCollection.Find(ctx, primitive.M{})
+	if err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+			"data":  nil,
+		})
+	}
+	defer cursor.Close(ctx)
+
+	var todos []models.Todo
+	if err = cursor.All(ctx, &todos); err != nil {
+		return c.Status(http.StatusInternalServerError).JSON(fiber.Map{
+			"error": err.Error(),
+			"data":  nil,
+		})
+	}
+
+	return c.Status(http.StatusOK).JSON(fiber.Map{
+		"data": todos,
+	})
+}
