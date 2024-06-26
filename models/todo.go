@@ -11,7 +11,6 @@ type Todo struct {
 	Description string             `json:"description"`
 	Completed   bool               `json:"completed"`
 
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt time.Time
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
